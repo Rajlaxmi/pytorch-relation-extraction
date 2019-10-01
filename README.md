@@ -1,166 +1,165 @@
+**2019.03.09 update**:
 
-**2019.03.09更新**:
-
-- 更新至Python3.X
-- 更新至Pytorch 0.4+(移除Variable等)
-- 使用mask作 Piece Pooling
-- 相比FilterNYT,建议使用大版本数据集NYT
+- Update to Python3.X
+- Updated to Pytorch 0.4+ (Remove Variable, etc.)
+- Use mask for Piece Pooling
+- Large version dataset NYT is recommended compared to FilterNYT
 
 
 2019.03.05:
 
-修复`mask piece wise`的bug.
+Fix the bug of `mask piece wise`.
 
-- 更新至pytorch 0.4+, 0.3版本不兼容
+- Updated to pytorch 0.4+, version 0.3 is not compatible
 
 
 2018.11.3:
 
-**基于mask的**`use_pcnn=True`目前有一些问题，正在修改, 建议:
+** Mask based ** `use_pcnn=True` currently has some problems, are being modified, it is recommended:
 
-- 直接使用 `use_pcnn=False` 测试，性能差不太多
-- 使用mask修改之前的版本: https://github.com/ShomyLiu/pytorch-relation-extraction/tree/7e3ef1720d43690fc0da0d81e54bdc0fc0cf822a
-
-
-2018.10.14更新：
-
-全监督的关系抽取PCNN(Zeng 2014)的代码地址: [PCNN](https://github.com/ShomyLiu/pytorch-pcnn)
+- Direct use of `use_pcnn=False` test, performance is not too bad
+- Use the mask to modify the previous version: https://github.com/ShomyLiu/pytorch-relation-extraction/tree/7e3ef1720d43690fc0da0d81e54bdc0fc0cf822a
 
 
-2018.9.10 更新:
-- 参考OpenNRE使用mask可以快速计算piece wise pooling.
-    - 修改NYT 53类数据处理 (完成)
-    - 修改NYT 27类数据处理 (未完成)
-    
-数据处理已经修改
+2018.10.14 update:
 
-使用Pytorch 复现 PCNN+MIL (Zeng 2015) 与 PCNN+ATT (Lin 2016), 以及两个模型在两个大小版本的数据集上(27类关系/53类关系)的表现对比。
+The fully supervised relationship extracts the code address of PCNN (Zeng 2014): [PCNN] (https://github.com/ShomyLiu/pytorch-pcnn)
 
 
+2018.9.10 update:
+- Refer to OpenNRE using mask to quickly calculate piece wise pooling.
+    - Modify NYT 53 class data processing (complete)
+    - Modify NYT 27 class data processing (unfinished)
+    
+Data processing has been modified
 
-相关博客:
-
-- [关系抽取论文笔记](http://shomy.top/2018/02/28/relation-extraction/)
-
-- [复现结果说明](http://shomy.top/2018/07/05/pytorch-relation-extraction/)
+Use Pytorch to reproduce PCNN+MIL (Zeng 2015) and PCNN+ATT (Lin 2016), and compare the performance of the two models on two large versions of the dataset (27 class relationships / 53 class relationships).
 
 
 
-在代码的组织,结构设计上,  主要参考 [陈云Pytorch实战指南](https://zhuanlan.zhihu.com/p/29024978) (个人推荐)。因此一些实现细节就不再赘述了，可以参考陈云的实战指南。
+Related blogs:
+
+- [Relationship drawing paper notes] (http://shomy.top/2018/02/28/relation-extraction/)
+
+- [Reproduction result description] (http://shomy.top/2018/07/05/pytorch-relation-extraction/)
 
 
 
-## 实现总览
+In the organization of the code, structural design, the main reference [Chen Yun Pytorch practical guide] (https://zhuanlan.zhihu.com/p/29024978) (personal recommendation). Therefore, some implementation details will not be described again. You can refer to Chen Yun's practical guide.
 
 
-环境:
+
+## Implementation Overview
+
+
+surroundings:
 
 - Python 2.X
 - Pytorch 0.3.1
 - fire
 
-简单介绍主要目录：
+Brief introduction to the main directory:
 
 ```
-├── checkpoints         # 保存预加载模型
-├── config.py             # 参数
-├── dataset                # 数据目录
-│ ├── FilterNYT         # SMALL 数据
-│ ├── NYT                 # LARGE 数据
+├── checkpoints # save preloaded model
+├── config.py # parameter
+├── dataset #数据目录
+│ ├── FilterNYT # SMALL Data
+│ ├── NYT # LARGE Data
 │ ├── filternyt.py
 │ ├── __init__.py
 │ ├── nyt.py
-├── main_mil.py       # PCNN+ONE 主文件
-├── main_att.py        # PCNN+ATT 主文件
-├── models               # 模型目录
+├── main_mil.py # PCNN+ONE main file
+├── main_att.py # PCNN+ATT main file
+├── models #模型目录
 │ ├── BasicModule.py
 │ ├── __init__.py
 │ ├── PCNN_ATT.py
 │ ├── PCNN_ONE.py
 ├── plot.ipynb
 ├── README.md
-├── utils.py                # 工具函数
+├── utils.py #tool function
 ```
 
 
 
-这份代码基本上是按照陈云的指南模仿来写的。 数据模型分开，参数/配置单独文件， 并且使用fire 库来管理命令行参数，更加方便修改参数。
+This code is basically written in accordance with Chen Yun's guide imitation. Separate data models, parameter/configure individual files, and use the fire library to manage command line parameters, making it easier to modify parameters.
 
-因为PCNN+ONE和PCNN+ATT的训练，测试方法不太一样，因此为了简单起见， 分别写了主文件: `main_mil.py`与`main_att.py`。
+Because of the training of PCNN+ONE and PCNN+ATT, the test methods are not the same, so for the sake of simplicity, the main files are written: `main_mil.py` and `main_att.py`.
 
-训练方式一样，如使用PCNN+ONE 训练大数据集, 后面可以直接修改参数, 默认使用`config.py`的参数:
-
-```
-
-python main_mil.py train --data="NYT"  --batch_size=128
+The training method is the same. If you use PCNN+ONE to train big data sets, you can directly modify the parameters later. By default, the parameters of `config.py` are used:
 
 ```
 
-注：需要提前按照下一节处理下数据（主要是生成npy格式的数据，方便直接被模型导入).
+Python main_mil.py train --data="NYT" --batch_size=128
+
+```
+
+Note: You need to process the data in the next section in advance (mainly to generate data in npy format, which is convenient to be imported directly by the model).
 
 
 
-## 数据预处理
+## Data preprocessing
 
-为了节省空间， 上传了LARGE和SMALL两份的原生数据，因此需要用数据预处理下，从而生成npy格式数据。
+In order to save space, two pieces of raw data of LARGE and SMALL are uploaded, so data preprocessing is required to generate npy format data.
 
-首先下载两份原始数据，地址:
+First download two original data, address:
 
-[百度网盘](https://pan.baidu.com/s/1Mu46NOtrrJhqN68s9WfLKg)  [谷歌云盘](https://drive.google.com/drive/folders/1kqHG0KszGhkyLA4AZSLZ2XZm9sxD8b58?usp=sharing)
+[Baidu network disk] (https://pan.baidu.com/s/1Mu46NOtrrJhqN68s9WfLKg) [谷云云盘](https://drive.google.com/drive/folders/1kqHG0KszGhkyLA4AZSLZ2XZm9sxD8b58?usp=sharing)
 
-数据格式简单说明:
-- 第一行: 两个实体ID:  ent1id ent2id
-- 第二行: bag标签和bag内句子个数，其中由于少数bag有多个label(不会超过4个)，因此句子label用4个整数表示，-1表示为空，如: 2 4 -1 -1 3 表示该bag的标签为2和4，然后包含3个句子
-- 后续几行表示该bag内的句子
-
-
-将两个zip放到`dataset`目录下，解压，这样会形成两个目录 ，一个NYT, 一个FilterNYT, 其中LARGE数据集在NYT目录，SMALL数据在FilterNYT内，这里的原始数据分别是从Zeng 2015 以及 Lin2016 的开源代码中获得。
+A simple description of the data format:
+- First line: Two entity IDs: ent1id ent2id
+- The second line: the number of sentences in the bag tag and bag. Since a few bags have multiple labels (no more than 4), the sentence label is represented by 4 integers, and -1 is empty, such as: 2 4 - 1 -1 3 means that the label of the bag is 2 and 4, and then contains 3 sentences.
+- The next few lines indicate the sentences in the bag
 
 
-
-对于LARGE数据:
+Put the two zips into the `dataset` directory and extract them. This will form two directories, one NYT, one FilterNYT, where the LARGE dataset is in the NYT directory, and the SMALL data is in FilterNYT. The raw data here is from Zeng 2015. And in the open source code of Lin2016.
 
 
 
-- 切换到NYT目录下，
-
-- 编译执行extract_cpp目录的extract.cpp: `g++  extract.cpp -o extract`, 之后执行:`./extract`, 得到`bag_train.txt, bag_test.txt, vector.txt` (在NYT目录内)，该cpp是Lin2016预处理的代码
-
-- 切换回主目录：执行数据预处理: `python dataset/nyt.py` 这样就会在NYT目录下生成一系列的npy文件。
+For LARGE data:
 
 
 
-对于SMALL数据
+- Switch to the NYT directory,
 
-- 直接执行 `python dataset/filternyt.py` 即可在FilterNYT的目录下生成npy文件。
+- Compile and execute extract.cpp from the extract_cpp directory: `g++ extract.cpp -o extract`, then execute: `./extract`, get `bag_train.txt, bag_test.txt, vector.txt` (in the NYT directory), The cpp is the code for Lin2016 preprocessing
 
-
-
-生成的NPY文件，均使用Pytorch的Dataset来直接导入，具体代码见 `nyt.py` 与`filternyt.py` 的 `*Data`类.
-
-数据预处理完毕之后，即可按照上述的命令来训练/测试。
+- Switch back to the home directory: Perform data preprocessing: `python dataset/nyt.py` This will generate a series of npy files in the NYT directory.
 
 
 
-##  调参优化
+For SMALL data
 
-在复现的过程了花了不少功夫，踩了不少坑，简单记一下:
-
-- 优化函数使用`Adadelta`而不是`Adam`, 用`SGD` 也可以，不过不如`Adadelta` 效果好。
-
-- Zeng 2015的theano代码中，关于select instance 和predict的地方，有些错误（并没有取概率最大的instance)
-
-- BatchSize相对大一些效果要好（128）
+- Directly execute `python dataset/filternyt.py` to generate npy files in the FilterNYT directory.
 
 
 
-关于结果的说明可以在博客查看。
+The generated NPY files are directly imported using Pytorch's Dataset. See the `*Data` class of `nyt.py` and `filternyt.py` for specific code.
+
+After the data is pre-processed, you can train/test according to the above commands.
 
 
 
-## 参考
+## tuning optimization
 
-- [PCNN+ONE Zeng 2015](https://github.com/smilelhh/ds_pcnns)
-- [PCNN+ATT Lin 2016](https://github.com/thunlp/OpenNRE)
-- [RE-DS-Word-Attention-Models](https://github.com/SharmisthaJat/RE-DS-Word-Attention-Models)
+In the process of recurring, I spent a lot of effort, stepped on a lot of pits, and simply remembered:
+
+- The optimization function uses `Adadelta` instead of `Adam`, which can be used with `SGD`, but not as good as `Adadelta`.
+
+- In the theano code of Zeng 2015, there are some errors in the place of select instance and predict (there is no instance with the highest probability)
+
+- BatchSize is relatively large and better (128)
+
+
+
+A description of the results can be viewed on the blog.
+
+
+
+## Reference
+
+- [PCNN+ONE Zeng 2015] (https://github.com/smilelhh/ds_pcnns)
+- [PCNN+ATT Lin 2016] (https://github.com/thunlp/OpenNRE)
+- [RE-DS-Word-Attention-Models] (https://github.com/SharmisthaJat/RE-DS-Word-Attention-Models)
 - [GloRE](https://github.com/ppuliu/GloRE)
