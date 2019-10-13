@@ -5,6 +5,8 @@
 - Use mask for Piece Pooling
 - Large version dataset NYT is recommended compared to FilterNYT
 
+Data:
+https://drive.google.com/drive/folders/1kqHG0KszGhkyLA4AZSLZ2XZm9sxD8b58
 
 2019.03.05:
 
